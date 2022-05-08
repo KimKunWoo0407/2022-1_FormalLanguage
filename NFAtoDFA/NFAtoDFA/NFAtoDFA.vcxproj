@@ -141,9 +141,17 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NFAtoDFA.cpp" />
+    <ClCompile Include="Transition_DFA.cpp" />
+    <ClCompile Include="Transition_NFA.cpp" />
+    <ClCompile Include="Transition_Reduced_DFA.cpp" />
+    <ClCompile Include="Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NFAtoDFA.h" />
+    <ClInclude Include="Transition_DFA.h" />
+    <ClInclude Include="Transition_NFA.h" />
+    <ClInclude Include="Transition_Reduced_DFA.h" />
+    <ClInclude Include="Variables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
