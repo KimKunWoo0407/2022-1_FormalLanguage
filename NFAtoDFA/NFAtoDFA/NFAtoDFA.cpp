@@ -89,14 +89,12 @@ void epsilonNFAtoDFA()
 	DFA_Q.push_back(epsilon_closure_map[startState]);
 	DFA_startState = epsilon_closure_map[startState];
 
+	Sigma.erase(remove_if(Sigma.begin(), Sigma.end(), [](auto x) -> bool { return x == 'ех'; }), Sigma.end());
+
 	for (int idx = 0; idx < DFA_Q.size(); idx++)
 	{
 		for (vector<int>::iterator i = Sigma.begin(); i != Sigma.end(); i++)
-		{
-			if (*i == 'ех') continue;
-			cout << *i;
 			makeDFA_Delta(DFA_Q[idx], *i);
-		}
 	}
 
 	makeDFA_F();
@@ -137,9 +135,36 @@ vector<R_DfaState> Grouping(R_DfaState group, int sigma)
 
 }
 
+void deleteInaccessibleState()
+{
+	vector<Transition_DFA> delta_temp = DFA_Delta;
+	vector<DfaState> dfaq_temp = {};
+
+	dfaq_temp.push_back(DFA_startState);
+
+	for (int p = 0; p < dfaq_temp.size(); p++)
+	{
+		for (int i = 0; i < delta_temp.size(); i++)
+		{
+			if (delta_temp[i].state == dfaq_temp[p])
+			{
+				DfaState tmp = delta_temp[i].nextState;
+				delta_temp.erase(delta_temp.begin() + i);
+				i--;
+				if (find(dfaq_temp.begin(), dfaq_temp.end(), tmp) == dfaq_temp.end())
+					dfaq_temp.push_back(tmp);
+			}
+
+		}
+	}
+
+	DFA_Q = dfaq_temp;
+
+}
 
 void DFAtoReduceDFA()
 {
+	deleteInaccessibleState();
 
 	for (vector<DfaState>::iterator it = DFA_Q.begin(); it != DFA_Q.end(); it++)
 	{

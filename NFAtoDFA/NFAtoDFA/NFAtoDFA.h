@@ -13,4 +13,5 @@ extern void makeDFA_F();
 extern void epsilonNFAtoDFA();
 extern int GroupNumber(DfaState state);
 extern vector<R_DfaState> Grouping(R_DfaState group, int sigma);
+extern void deleteInaccessibleState();
 extern void DFAtoReduceDFA();
