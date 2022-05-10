@@ -69,17 +69,6 @@ void makeEpsilonClosure(State current) {
 	
 				
 			}
-				
-
-	/*for (vector<Transition_NFA>::iterator Nit = NFA_Delta.begin(); Nit != NFA_Delta.end(); Nit++)
-		if (Nit->state == current && Nit->symbol == 'ех')
-			for (vector<State>::iterator it = Nit->nextState.begin(); it != Nit->nextState.end(); it++)
-				if (find(epsilon_closure.begin(), epsilon_closure.end(), *it) == epsilon_closure.end())
-				{
-					epsilon_closure.push_back(*it);
-
-					makeEpsilonClosure(*it);
-				}*/
 }
 
 void matchEpsilonClosure(State state)
@@ -186,7 +175,7 @@ void deleteInaccessibleState()
 
 }
 
-void DFAtoReduceDFA()
+void DFAtoReducedDFA()
 {
 	deleteInaccessibleState();
 

@@ -26,7 +26,7 @@ int main()
 
 	epsilonNFAtoDFA();
 
-	DFAtoReduceDFA();
+	DFAtoReducedDFA();
 
 	printResult('A');
 
