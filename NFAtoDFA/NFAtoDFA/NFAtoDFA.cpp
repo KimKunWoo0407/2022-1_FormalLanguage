@@ -12,8 +12,10 @@ DfaState TransitionResult(DfaState state, int symbol)
 
 void makeDFA_Delta(vector<State> dfaq, int symbol)
 {
-	vector<State> nextState;
-	vector<State> closure;
+	vector<State> nextState; // Trainsition의 결과
+
+	vector<State> closure; // nextState의 closure
+
 	for (vector<State>::iterator it = dfaq.begin(); it != dfaq.end(); it++)
 	{
 		for (vector<Transition_NFA>::iterator Nit = NFA_Delta.begin(); Nit != NFA_Delta.end(); Nit++)
@@ -35,15 +37,13 @@ void makeDFA_Delta(vector<State> dfaq, int symbol)
 		closure.insert(closure.end(), epsilon_closure_map[*sit].begin(), epsilon_closure_map[*sit].end());
 
 	sort(closure.begin(), closure.end());
-	unique(closure.begin(), closure.end());
+	closure.erase(unique(closure.begin(), closure.end()), closure.end());  
 
 
 	if (find(DFA_Q.begin(), DFA_Q.end(), closure) == DFA_Q.end())
 		DFA_Q.push_back(closure);
 
 	DFA_Delta.push_back(Transition_DFA(dfaq, symbol, closure));
-
-
 }
 
 void makeEpsilonClosure(State current) {
@@ -51,12 +51,35 @@ void makeEpsilonClosure(State current) {
 	for (vector<Transition_NFA>::iterator Nit = NFA_Delta.begin(); Nit != NFA_Delta.end(); Nit++)
 		if (Nit->state == current && Nit->symbol == 'ε')
 			for (vector<State>::iterator it = Nit->nextState.begin(); it != Nit->nextState.end(); it++)
+			{
+				if (epsilon_closure_map[*it].empty())
+				{
+					if (find(epsilon_closure.begin(), epsilon_closure.end(), *it) == epsilon_closure.end()) {
+						epsilon_closure.push_back(*it);
+						makeEpsilonClosure(*it);
+					}
+				}
+					
+				else 
+				{
+					for (vector<State>::iterator sit = epsilon_closure_map[*it].begin(); sit != epsilon_closure_map[*it].end(); sit++)
+						if (find(epsilon_closure.begin(), epsilon_closure.end(), *sit) == epsilon_closure.end())
+							epsilon_closure.push_back(*sit);
+				}
+	
+				
+			}
+				
+
+	/*for (vector<Transition_NFA>::iterator Nit = NFA_Delta.begin(); Nit != NFA_Delta.end(); Nit++)
+		if (Nit->state == current && Nit->symbol == 'ε')
+			for (vector<State>::iterator it = Nit->nextState.begin(); it != Nit->nextState.end(); it++)
 				if (find(epsilon_closure.begin(), epsilon_closure.end(), *it) == epsilon_closure.end())
 				{
 					epsilon_closure.push_back(*it);
-					makeEpsilonClosure(*it);
-				}
 
+					makeEpsilonClosure(*it);
+				}*/
 }
 
 void matchEpsilonClosure(State state)
@@ -86,10 +109,10 @@ void epsilonNFAtoDFA()
 	for (vector<State>::iterator it = NFA_Q.begin(); it != NFA_Q.end(); it++)
 		matchEpsilonClosure(*it);
 
+	Sigma.erase(remove_if(Sigma.begin(), Sigma.end(), [](auto x) -> bool { return x == 'ε'; }), Sigma.end());
+
 	DFA_Q.push_back(epsilon_closure_map[startState]);
 	DFA_startState = epsilon_closure_map[startState];
-
-	Sigma.erase(remove_if(Sigma.begin(), Sigma.end(), [](auto x) -> bool { return x == 'ε'; }), Sigma.end());
 
 	for (int idx = 0; idx < DFA_Q.size(); idx++)
 	{
@@ -98,6 +121,7 @@ void epsilonNFAtoDFA()
 	}
 
 	makeDFA_F();
+
 }
 
 int GroupNumber(DfaState state)
@@ -207,7 +231,8 @@ void DFAtoReduceDFA()
 		for (vector<DfaState>::iterator dit = DFA_F.begin(); dit != DFA_F.end(); dit++)
 		{
 			if (find(ReducedDFA_Q[i].begin(), ReducedDFA_Q[i].end(), *dit) != ReducedDFA_Q[i].end())
-				ReducedDFA_F.push_back(ReducedDFA_Q[i]);
+				if(find(ReducedDFA_F.begin(),ReducedDFA_F.end(),ReducedDFA_Q[i])==ReducedDFA_F.end())
+					ReducedDFA_F.push_back(ReducedDFA_Q[i]);
 		}
 
 		for (int j = 0; j < Sigma.size(); j++)
@@ -221,4 +246,34 @@ void DFAtoReduceDFA()
 	}
 }
 
+void printResult(char STANDARD)
+{
+	cout << "Q : { ";
+	for (int i = 0; i < ReducedDFA_Q.size(); i++)
+		cout << char(STANDARD + i) << ", ";
+	cout << "}" << endl;
+
+	cout << "Σ : { ";
+	for (int i = 0; i < Sigma.size(); i++)
+		cout << char(Sigma[i]) << ", ";
+	cout << "}" << endl;
+
+
+
+	cout << "δ : ";
+	for (int i = 0; i < Reduced_DFA_Delta.size(); i++)
+	{
+		cout << "δ(" << char(STANDARD + (find(ReducedDFA_Q.begin(), ReducedDFA_Q.end(), Reduced_DFA_Delta[i].state) - ReducedDFA_Q.begin())) << ", ";
+		cout << char(Reduced_DFA_Delta[i].symbol) << ") = ";
+		cout << char(STANDARD + (find(ReducedDFA_Q.begin(), ReducedDFA_Q.end(), Reduced_DFA_Delta[i].nextState) - ReducedDFA_Q.begin())) << endl;
+	}
+
+	cout << "q0 : ";
+	cout << char(STANDARD + (find(ReducedDFA_Q.begin(), ReducedDFA_Q.end(), ReducedDFA_startState) - ReducedDFA_Q.begin())) << endl;
+
+	cout << "F : { ";
+	for (int i = 0; i < ReducedDFA_F.size(); i++)
+		cout << char(STANDARD + (find(ReducedDFA_Q.begin(), ReducedDFA_Q.end(), ReducedDFA_F[i]) - ReducedDFA_Q.begin())) << ", ";
+	cout << "}" << endl;
+}
 
