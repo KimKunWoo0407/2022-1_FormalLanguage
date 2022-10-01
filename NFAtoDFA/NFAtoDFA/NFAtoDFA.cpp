@@ -25,7 +25,7 @@ void makeDFA_Delta(vector<State> dfaq, int symbol)
 				for (vector<State>::iterator sit = Nit->nextState.begin(); sit != Nit->nextState.end(); sit++)
 					if (find(nextState.begin(), nextState.end(), *sit) == nextState.end())
 						nextState.push_back(*sit);
-
+						
 			}
 
 		}
