@@ -18,3 +18,4 @@ vector<R_DfaState> ReducedDFA_F = {};
 
 vector<State> epsilon_closure = {};
 vector<R_DfaState> Group(2);
+

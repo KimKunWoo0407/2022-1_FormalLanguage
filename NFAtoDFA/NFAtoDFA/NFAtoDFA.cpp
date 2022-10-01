@@ -12,19 +12,18 @@ DfaState TransitionResult(DfaState state, int symbol)
 
 void makeDFA_Delta(vector<State> dfaq, int symbol)
 {
-	vector<State> nextState; // Trainsition의 결과
+	set<State> nextState; // Transition의 결과
 
 	vector<State> closure; // nextState의 closure
 
-	for (vector<State>::iterator it = dfaq.begin(); it != dfaq.end(); it++)
+	for (auto it = dfaq.begin(); it != dfaq.end(); it++)
 	{
-		for (vector<Transition_NFA>::iterator Nit = NFA_Delta.begin(); Nit != NFA_Delta.end(); Nit++)
+		for (auto Nit = NFA_Delta.begin(); Nit != NFA_Delta.end(); Nit++)
 		{
 			if (Nit->state == *it && Nit->symbol == symbol)
 			{
-				for (vector<State>::iterator sit = Nit->nextState.begin(); sit != Nit->nextState.end(); sit++)
-					if (find(nextState.begin(), nextState.end(), *sit) == nextState.end())
-						nextState.push_back(*sit);
+				for (auto sit = Nit->nextState.begin(); sit != Nit->nextState.end(); sit++)
+					nextState.insert(*sit);
 						
 			}
 
@@ -33,7 +32,7 @@ void makeDFA_Delta(vector<State> dfaq, int symbol)
 
 	if (nextState.size() == 0) return;
 
-	for (vector<State>::iterator sit = nextState.begin(); sit != nextState.end(); sit++)
+	for (auto sit = nextState.begin(); sit != nextState.end(); sit++)
 		closure.insert(closure.end(), epsilon_closure_map[*sit].begin(), epsilon_closure_map[*sit].end());
 
 	sort(closure.begin(), closure.end());

@@ -20,3 +20,4 @@ Transition_Reduced_DFA::Transition_Reduced_DFA(R_DfaState state, int symbol, Dfa
 }
 
 vector<Transition_Reduced_DFA> Reduced_DFA_Delta = {};
+
